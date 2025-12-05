@@ -13,6 +13,7 @@ const pathToPackage = argv.pathToPackage || `${pathToRoot}/package.json`;
 const info = helpers.getPackageInfo(pathToPackage);
 
 const pathToPlist = argv.pathToPlist || `${pathToRoot}/ios/${info.name}/Info.plist`;
+const pathToPbxproj = argv.pathToPbxproj || `${pathToRoot}/ios/${info.name}.xcodeproj/project.pbxproj`;
 const pathToGradle = argv.pathToGradle || `${pathToRoot}/android/app/build.gradle`;
 // handle case of several plist files
 const pathsToPlists = Array.isArray(pathToPlist) ? pathToPlist : [pathToPlist];
@@ -27,7 +28,7 @@ let patch = helpers.version(versions[2], argv.patch, argv.major || argv.minor);
 const version = `${major}.${minor}.${patch}`;
 
 // getting next build number
-const buildCurrent = helpers.getBuildNumberFromPlist(pathsToPlists[0]);
+const buildCurrent = helpers.getMaximumBuildNumber(pathsToPlists[0], pathToPbxproj);
 const build = buildCurrent + 1;
 
 // getting commit message
@@ -73,7 +74,7 @@ const update = chain.then(() => {
   log.info('Updating version in xcode project...', 1);
 
   pathsToPlists.forEach(pathToPlist => {
-    helpers.changeVersionAndBuildInPlist(pathToPlist, version, build);
+    helpers.changeVersionAndBuildInPlist(pathToPlist, version, build, pathToPbxproj);
   });
   log.success(`Version and build number in ios project (plist file) changed.`, 2);
 }).then(() => {
