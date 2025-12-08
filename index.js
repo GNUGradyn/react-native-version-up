@@ -97,7 +97,8 @@ const commit = update.then(() => {
     return helpers.commitVersionIncrease(version, message, [
       pathToPackage,
       ...pathsToPlists,
-      pathToGradle
+      pathToGradle,
+      pathToPbxproj
     ]).then(() => {
       log.success(`Commit with files added. Run "git push".`, 1);
     });
